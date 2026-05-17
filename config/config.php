@@ -1,6 +1,10 @@
 <?php
 session_start(); 
 
+$baseUrl = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'];
+$project_folder = explode('/', trim(dirname($_SERVER['SCRIPT_NAME']), '/'))[0];
+define('BASEURL', $baseUrl . '/' . $project_folder);
+
 //Database Config
 try{
     $host = 'localhost';
