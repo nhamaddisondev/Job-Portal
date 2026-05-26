@@ -6,6 +6,7 @@ if (!isset($base_url)) {
 }
 ?>
 
+    <?php if (empty($suppressPageHead)): ?>
     <footer class="mt-12 border-t border-slate-800 bg-slate-950 text-slate-300">
         <div class="w-full max-w-screen-xl mx-auto px-4 py-8">
             <div class="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
@@ -55,5 +56,6 @@ if (!isset($base_url)) {
             </div>
         </div>
     </footer>
+    <?php endif; ?>
 </body>
 </html>

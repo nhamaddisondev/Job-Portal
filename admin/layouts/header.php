@@ -17,6 +17,7 @@ $base_url = $base_url . '/' . $project_folder;
     <title>Online Job Portal - Admin</title>
 </head>
 <body class="bg-gray-50 text-gray-900">
+    <?php if (empty($suppressPageHead)): ?>
     <header class="bg-slate-950 text-white shadow-sm">
         <nav class="w-full max-w-screen-xl mx-auto px-4 py-4">
             <div class="flex items-center justify-between gap-4">
@@ -47,3 +48,4 @@ $base_url = $base_url . '/' . $project_folder;
             </div>
         </nav>
     </header>
+    <?php endif; ?>
