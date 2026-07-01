@@ -18,7 +18,5 @@ require 'includes/header.php';
             Go Home
         </a>
     </div>
-    <?php require 'includes/footer.php'; ?>
 </main>
-</body>
-</html>
+<?php require 'includes/footer.php'; ?>

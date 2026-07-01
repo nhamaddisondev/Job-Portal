@@ -22,7 +22,7 @@ catch(PDOException $e){
 
 //Pending Applications Employee
 $pendingApplications = 0;
-if(isset($_SESSION['id']) && $_SESSION['role'] === 'employee'){
+if(isset($_SESSION['id']) && ($_SESSION['role'] ?? '') === 'employee'){
     $stmt = $conn->prepare("SELECT COUNT(*) FROM applications WHERE employee_id = :employee_id AND status = 'pending'");
     $stmt->bindParam(':employee_id', $_SESSION['id']);
     $stmt->execute();

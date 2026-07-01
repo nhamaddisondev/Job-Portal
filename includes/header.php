@@ -1,9 +1,12 @@
 <?php
-$base_url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]";
-
-$project_folder = explode('/', $_SERVER['REQUEST_URI'])[1];
-
-$base_url = $base_url . '/' . $project_folder;
+$scheme = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? "https" : "http";
+$projectName = basename(dirname(__DIR__));
+$pathParts = explode('/', trim($_SERVER['SCRIPT_NAME'], '/'));
+$projectIndex = array_search($projectName, $pathParts, true);
+$projectPath = $projectIndex === false ? '' : '/' . implode('/', array_slice($pathParts, 0, $projectIndex + 1));
+$base_url = $scheme . "://$_SERVER[HTTP_HOST]" . $projectPath;
+$isLoggedIn = isset($_SESSION['username']);
+$displayName = $_SESSION['username'] ?? '';
 
 ?>
 
@@ -40,8 +43,13 @@ $base_url = $base_url . '/' . $project_folder;
                         <a href="<?php echo $base_url; ?>/about.php" class="hover:text-sky-600">About</a>
                         <a href="<?php echo $base_url; ?>/contact.php" class="hover:text-sky-600">Contact</a>
                         <div class="flex flex-col gap-3 border-t border-gray-100 pt-4 md:flex-row md:border-t-0 md:pt-0">
-                            <a href="<?php echo $base_url; ?>/auth/login.php" class="rounded-md border border-sky-600 px-4 py-2 text-center text-sky-600 hover:bg-sky-50">Login</a>
-                            <a href="<?php echo $base_url; ?>/auth/register.php" class="rounded-md bg-sky-600 px-4 py-2 text-center text-white hover:bg-sky-700">Register</a>
+                            <?php if ($isLoggedIn): ?>
+                                <span class="px-1 py-2 text-gray-500">Hi, <?php echo htmlspecialchars((string) $displayName, ENT_QUOTES, 'UTF-8'); ?></span>
+                                <a href="<?php echo $base_url; ?>/auth/logout.php" class="rounded-md border border-sky-600 px-4 py-2 text-center text-sky-600 hover:bg-sky-50">Logout</a>
+                            <?php else: ?>
+                                <a href="<?php echo $base_url; ?>/auth/login.php" class="rounded-md border border-sky-600 px-4 py-2 text-center text-sky-600 hover:bg-sky-50">Login</a>
+                                <a href="<?php echo $base_url; ?>/auth/register.php" class="rounded-md bg-sky-600 px-4 py-2 text-center text-white hover:bg-sky-700">Register</a>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
