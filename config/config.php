@@ -2,8 +2,8 @@
 session_start(); 
 
 $baseUrl = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'];
-$project_folder = explode('/', trim(dirname($_SERVER['SCRIPT_NAME']), '/'))[0];
-define('BASEURL', $baseUrl . '/' . $project_folder);
+$scriptDir = trim(dirname($_SERVER['SCRIPT_NAME']), '/');
+define('BASEURL', $baseUrl . '/' . $scriptDir);
 
 //Database Config
 $conn = null;
@@ -34,7 +34,14 @@ if($conn instanceof PDO && isset($_SESSION['id']) && ($_SESSION['role'] ?? '') =
 if(!defined('ADMINURL')){
     $protocol      = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? "https" : "http";
     $host          = $_SERVER['HTTP_HOST'];
-    $scriptDir     = dirname($_SERVER['SCRIPT_NAME']);      //  /online-job-portal-php-mysql/admin-panel/jobs-admins
-    $projectFolder = explode('/', trim($scriptDir, '/'))[0]; // online-job-portal-php-mysql
-    define('ADMINURL', "$protocol://$host/$projectFolder/admin");
+    $scriptDir     = dirname($_SERVER['SCRIPT_NAME']);
+    $parts         = explode('/', trim($scriptDir, '/'));
+    $projectFolder = $parts[0] ?? '';
+    // If there are more parts (e.g. Cloner/job-portal), include them
+    $adminPath     = $projectFolder;
+    for ($i = 1; $i < count($parts); $i++) {
+        if ($parts[$i] === 'admin') break;
+        $adminPath .= '/' . $parts[$i];
+    }
+    define('ADMINURL', "$protocol://$host/$adminPath/admin");
 }
