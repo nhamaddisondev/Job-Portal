@@ -6,6 +6,8 @@ $project_folder = explode('/', trim(dirname($_SERVER['SCRIPT_NAME']), '/'))[0];
 define('BASEURL', $baseUrl . '/' . $project_folder);
 
 //Database Config
+$conn = null;
+
 try{
     $host = 'localhost';
     $dbname = 'online_jobs_portal';
@@ -17,12 +19,12 @@ try{
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 }
 catch(PDOException $e){
-    echo "Connection failed: " . $e->getMessage();
+    $db_error = $e->getMessage();
 }
 
 //Pending Applications Employee
 $pendingApplications = 0;
-if(isset($_SESSION['id']) && ($_SESSION['role'] ?? '') === 'employee'){
+if($conn instanceof PDO && isset($_SESSION['id']) && ($_SESSION['role'] ?? '') === 'employee'){
     $stmt = $conn->prepare("SELECT COUNT(*) FROM applications WHERE employee_id = :employee_id AND status = 'pending'");
     $stmt->bindParam(':employee_id', $_SESSION['id']);
     $stmt->execute();
