@@ -1,15 +1,13 @@
 <?php require '../../config/config.php'; ?>
 
-
 <?php
-if (isset($_SESSION['adminname'])) {
-    header("location : " . ADMINURL . "/admins/login-admins.php");
+if (!isset($_SESSION['adminname'])) {
+    header("Location: " . ADMINURL . "/admins/login-admins.php");
     exit();
 }
 
 $pageTitle = "Categories";
 $breadcrumb = "Systems";
-
 
 require "../../admin/layouts/header.php";
 
@@ -36,7 +34,7 @@ $stmt = $conn->prepare("SELECT * FROM categories ORDER BY id DESC LIMIT :limit O
 $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
 $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
 $stmt->execute();
-$categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$categories = $stmt->fetchAll(PDO::FETCH_OBJ);
 
 $flash = null;
 if (isset($_GET['error'])) {
@@ -71,7 +69,7 @@ if (isset($_GET['error'])) {
             <?php if ($flash): ?>
                 <div class="p-4">
                     <div
-                        class="flex items-center p-4 rounded-md <?= $flash['class'] === 'alert-success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' ?> relative">
+                        class="flex items-center p-4 rounded-md <?= $flash['type'] === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' ?> relative">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20"
                             fill="currentColor">
                             <path fill-rule="evenodd"
@@ -92,14 +90,9 @@ if (isset($_GET['error'])) {
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th
-                                class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
-                                #</th>
-                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Category</th>
-                            <th
-                                class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-48">
-                                Actions</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">#</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-48">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
@@ -139,7 +132,6 @@ if (isset($_GET['error'])) {
                             Previous
                         </a>
                     </li>
-
                     <?php for ($i = 1; $i <= $totalPages; $i++): ?>
                         <li>
                             <a href="?page=<?= $i ?>"
@@ -148,7 +140,6 @@ if (isset($_GET['error'])) {
                             </a>
                         </li>
                     <?php endfor; ?>
-
                     <li>
                         <a href="?page=<?= min($totalPages, $page + 1) ?>"
                             class="px-3 py-1 border rounded-md <?= ($page >= $totalPages ? 'pointer-events-none opacity-50' : 'hover:bg-gray-100') ?>">

@@ -1,9 +1,8 @@
 <?php require '../../config/config.php'; ?>
 
-
 <?php
-if (isset($_SESSION['adminname'])) {
-    header("location : " . ADMINURL . "/admins/login-admins.php");
+if (!isset($_SESSION['adminname'])) {
+    header("Location: " . ADMINURL . "/admins/login-admins.php");
     exit();
 }
 
@@ -32,7 +31,6 @@ try {
 
 } catch (PDOException $e) {
     // Handle foreign key constraint (category in use)
-    // MySQL/MariaDB: SQLSTATE 23000, driver-specific code 1451
     $msg = "Unable to delete category.";
     if ($e->getCode() === '23000') {
         $msg = "Cannot delete: this category is in use.";

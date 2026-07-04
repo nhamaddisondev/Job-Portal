@@ -1,9 +1,8 @@
 <?php require '../../config/config.php'; ?>
 
 <?php
-
-if(isset($_SESSION['adminname'])) {
-    header("location : " . ADMINURL . "/admins/login-admins.php");
+if (!isset($_SESSION['adminname'])) {
+    header("Location: " . ADMINURL . "/admins/login-admins.php");
     exit();
 }
 
@@ -78,86 +77,35 @@ require "../layouts/header.php";
 
 <div class="flex flex-col">
   <div class="bg-white shadow-md rounded-lg overflow-hidden">
-    <!-- Card Header -->
     <div class="px-6 py-4 border-b border-gray-200">
       <div class="flex flex-wrap items-center justify-between gap-4">
         <div class="mb-2 md:mb-0">
           <h2 class="text-lg font-semibold text-gray-800">All Jobs</h2>
           <p class="text-sm text-gray-500">Total: <?= (int)$totalRecords ?></p>
         </div>
-
-        <!-- Filters/Search -->
         <form class="flex flex-wrap items-center gap-2" method="get" action="show-jobs.php">
-          <div class="flex flex-col">
-            <label for="category" class="sr-only">Category</label>
-            <select 
-              class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              id="category" 
-              name="category"
-            >
-              <option value="">All categories</option>
-              <?php foreach ($categories as $c): ?>
-                <option value="<?= h($c) ?>" <?= ($c === $categoryF ? 'selected' : '') ?>><?= h($c) ?></option>
-              <?php endforeach; ?>
-            </select>
-          </div>
-
-          <div class="flex flex-col">
-            <label for="employer" class="sr-only">Employer</label>
-            <select 
-              class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              id="employer" 
-              name="employer"
-            >
-              <option value="">All employers</option>
-              <?php foreach ($employers as $e): ?>
-                <option value="<?= h($e) ?>" <?= ($e === $employerF ? 'selected' : '') ?>><?= h($e) ?></option>
-              <?php endforeach; ?>
-            </select>
-          </div>
-
-          <div class="flex flex-col">
-            <label for="q" class="sr-only">Search</label>
-            <input 
-              type="text" 
-              class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              id="q" 
-              name="q" 
-              placeholder="Search title, category, employer…" 
-              value="<?= h($q) ?>"
-            >
-          </div>
-
-          <button 
-            type="submit" 
-            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-          >
-            Filter
-          </button>
-          
+          <select class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" id="category" name="category">
+            <option value="">All categories</option>
+            <?php foreach ($categories as $c): ?>
+              <option value="<?= h($c) ?>" <?= ($c === $categoryF ? 'selected' : '') ?>><?= h($c) ?></option>
+            <?php endforeach; ?>
+          </select>
+          <select class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" id="employer" name="employer">
+            <option value="">All employers</option>
+            <?php foreach ($employers as $e): ?>
+              <option value="<?= h($e) ?>" <?= ($e === $employerF ? 'selected' : '') ?>><?= h($e) ?></option>
+            <?php endforeach; ?>
+          </select>
+          <input type="text" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" id="q" name="q" placeholder="Search title, category, employer…" value="<?= h($q) ?>">
+          <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Filter</button>
           <?php if ($q !== '' || $categoryF !== '' || $employerF !== ''): ?>
-            <a 
-              href="show-jobs.php" 
-              class="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500"
-            >
-              Reset
-            </a>
+            <a href="show-jobs.php" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500">Reset</a>
           <?php endif; ?>
         </form>
       </div>
     </div>
 
-    <!-- Card Body -->
     <div class="p-0">
-      <?php if (!empty($_SESSION['admin_flash'])): ?>
-        <?php $f = $_SESSION['admin_flash']; unset($_SESSION['admin_flash']); ?>
-        <div class="p-4">
-          <div class="p-4 mb-4 text-sm text-<?= h($f['type']) === 'success' ? 'green' : 'red' ?>-800 bg-<?= h($f['type']) === 'success' ? 'green' : 'red' ?>-100 rounded-lg" role="alert">
-            <?= h($f['text']) ?>
-          </div>
-        </div>
-      <?php endif; ?>
-
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
@@ -188,28 +136,13 @@ require "../layouts/header.php";
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     <?php if ((int)$job->status === 1): ?>
-                      <a
-                        href="<?= ADMINURL ?>/jobs-admins/status-jobs.php?id=<?= (int)$job->id; ?>&status=1&r=<?= urlencode($_SERVER['REQUEST_URI']); ?>"
-                        class="px-3 py-1 border border-red-300 text-red-600 rounded-md text-xs hover:bg-red-50"
-                        title="Mark as Unverified"
-                      >Unverify</a>
+                      <a href="<?= ADMINURL ?>/jobs-admins/status-jobs.php?id=<?= (int)$job->id; ?>&status=1&r=<?= urlencode($_SERVER['REQUEST_URI']); ?>" class="px-3 py-1 border border-red-300 text-red-600 rounded-md text-xs hover:bg-red-50" title="Mark as Unverified">Unverify</a>
                     <?php else: ?>
-                      <a
-                        href="<?= ADMINURL ?>/jobs-admins/status-jobs.php?id=<?= (int)$job->id; ?>&status=0&r=<?= urlencode($_SERVER['REQUEST_URI']); ?>"
-                        class="px-3 py-1 border border-green-300 text-green-600 rounded-md text-xs hover:bg-green-50"
-                        title="Mark as Verified"
-                      >Verify</a>
+                      <a href="<?= ADMINURL ?>/jobs-admins/status-jobs.php?id=<?= (int)$job->id; ?>&status=0&r=<?= urlencode($_SERVER['REQUEST_URI']); ?>" class="px-3 py-1 border border-green-300 text-green-600 rounded-md text-xs hover:bg-green-50" title="Mark as Verified">Verify</a>
                     <?php endif; ?>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <a
-                      href="<?= ADMINURL ?>/jobs-admins/delete-jobs.php?id=<?= (int)$job->id; ?>"
-                      class="px-3 py-1 bg-red-600 text-white rounded-md text-xs hover:bg-red-700"
-                      title="Delete job"
-                      onclick="return confirm('Delete this job posting? This action cannot be undone.');"
-                    >
-                      <i class="fa fa-trash"></i>
-                    </a>
+                    <a href="<?= ADMINURL ?>/jobs-admins/delete-jobs.php?id=<?= (int)$job->id; ?>" class="px-3 py-1 bg-red-600 text-white rounded-md text-xs hover:bg-red-700" title="Delete job" onclick="return confirm('Delete this job posting? This action cannot be undone.');">Delete</a>
                   </td>
                 </tr>
               <?php endforeach; ?>
@@ -218,28 +151,18 @@ require "../layouts/header.php";
         </table>
       </div>
 
-      <!-- Pagination -->
       <nav class="p-4">
         <ul class="flex justify-center items-center gap-1">
           <li>
-            <a 
-              class="px-3 py-1 border border-gray-300 rounded-md <?= ($page <= 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50') ?>"
-              href="?<?= $baseQS . $sep ?>page=<?= max(1, $page - 1) ?>"
-            >Previous</a>
+            <a class="px-3 py-1 border border-gray-300 rounded-md <?= ($page <= 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50') ?>" href="?<?= $baseQS . $sep ?>page=<?= max(1, $page - 1) ?>">Previous</a>
           </li>
           <?php for ($i = 1; $i <= $totalPages; $i++): ?>
             <li>
-              <a 
-                class="px-3 py-1 border border-gray-300 rounded-md <?= ($page === $i ? 'bg-blue-600 text-white' : 'hover:bg-gray-50') ?>"
-                href="?<?= $baseQS . $sep ?>page=<?= $i ?>"
-              ><?= $i ?></a>
+              <a class="px-3 py-1 border border-gray-300 rounded-md <?= ($page === $i ? 'bg-blue-600 text-white' : 'hover:bg-gray-50') ?>" href="?<?= $baseQS . $sep ?>page=<?= $i ?>"><?= $i ?></a>
             </li>
           <?php endfor; ?>
           <li>
-            <a 
-              class="px-3 py-1 border border-gray-300 rounded-md <?= ($page >= $totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50') ?>"
-              href="?<?= $baseQS . $sep ?>page=<?= min($totalPages, $page + 1) ?>"
-            >Next</a>
+            <a class="px-3 py-1 border border-gray-300 rounded-md <?= ($page >= $totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50') ?>" href="?<?= $baseQS . $sep ?>page=<?= min($totalPages, $page + 1) ?>">Next</a>
           </li>
         </ul>
       </nav>

@@ -1,8 +1,8 @@
 <?php
 require '../../config/config.php';
 
-if (isset($_SESSION['adminname'])) {
-    header("location: " . ADMINURL . "/admins/login-admins.php");
+if (!isset($_SESSION['adminname'])) {
+    header("Location: " . ADMINURL . "/admins/login-admins.php");
     exit();
 }
 $job_id = (int) $_GET['id'];
@@ -148,54 +148,41 @@ require "../layouts/header.php";
                 <!-- Application Questions -->
                 <h5 class="text-lg font-bold mt-4 flex items-center">
                     Application Questions
-                    <?php if (empty($questions)): ?>
+                    <?php if (empty($specifications)): ?>
                         <span class="bg-gray-500 text-white text-xs font-medium px-2.5 py-0.5 rounded ml-2">None</span>
                     <?php endif; ?>
                 </h5>
 
-                <?php if (!empty($questions)): ?>
+                <?php if (!empty($specifications)): ?>
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200 border">
                             <thead class="bg-gray-100">
                                 <tr>
-                                    <th
-                                        class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-2/5">
-                                        Question</th>
-                                    <th
-                                        class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">
-                                        Type</th>
-                                    <th
-                                        class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/12">
-                                        Required</th>
-                                    <th
-                                        class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/4">
-                                        Options (if any)</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-2/5">Question</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">Type</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/12">Required</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/4">Options (if any)</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
-                                <?php foreach ($questions as $q): ?>
+                                <?php foreach ($specifications as $q): ?>
                                     <tr>
                                         <td class="px-4 py-2 whitespace-nowrap">
                                             <?= h($q->question_text) ?>
                                             <?php if ($q->source === 'predefined'): ?>
-                                                <span
-                                                    class="bg-blue-200 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded ml-2">Standard</span>
+                                                <span class="bg-blue-200 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded ml-2">Standard</span>
                                             <?php else: ?>
-                                                <span
-                                                    class="bg-indigo-200 text-indigo-800 text-xs font-medium px-2.5 py-0.5 rounded ml-2">Custom</span>
+                                                <span class="bg-indigo-200 text-indigo-800 text-xs font-medium px-2.5 py-0.5 rounded ml-2">Custom</span>
                                             <?php endif; ?>
                                         </td>
                                         <td class="px-4 py-2 whitespace-nowrap">
-                                            <span
-                                                class="bg-gray-200 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded"><?= h(qtype_label($q->qtype)) ?></span>
+                                            <span class="bg-gray-200 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded"><?= h(qtype_label($q->qtype)) ?></span>
                                         </td>
                                         <td class="px-4 py-2 whitespace-nowrap">
                                             <?php if ((int) $q->is_required === 1): ?>
-                                                <span
-                                                    class="bg-green-200 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">Yes</span>
+                                                <span class="bg-green-200 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">Yes</span>
                                             <?php else: ?>
-                                                <span
-                                                    class="bg-gray-200 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded">No</span>
+                                                <span class="bg-gray-200 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded">No</span>
                                             <?php endif; ?>
                                         </td>
                                         <td class="px-4 py-2">
@@ -254,8 +241,9 @@ require "../layouts/header.php";
     .admin-rich ul {
         padding-left: 1.2rem;
     }
-
     .admin-rich li {
         margin-bottom: 0.25rem;
     }
 </style>
+
+<?php require "../layouts/footer.php"; ?>

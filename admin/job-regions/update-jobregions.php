@@ -1,68 +1,65 @@
 <?php require '../../config/config.php'; ?>
 
 <?php
-if (isset($_SESSION['adminname'])) {
-    header("location : " . ADMINURL . "/admins/login-admins.php");
+if (!isset($_SESSION['adminname'])) {
+    header("Location: " . ADMINURL . "/admins/login-admins.php");
     exit();
 }
 
-// -------- Helpers --------
 function h($v)
 {
     return htmlspecialchars((string) $v, ENT_QUOTES, 'UTF-8');
 }
 
-// -------- Validate & fetch category --------
 if (!isset($_GET['id']) || !ctype_digit($_GET['id'])) {
-    header("Location: " . ADMINURL . "/categories-admins/show-categories.php?error=" . urlencode("Invalid category ID."));
+    header("Location: " . ADMINURL . "/job-regions/show-jobregions.php?error=" . urlencode("Invalid region ID."));
     exit;
 }
 $id = (int) $_GET['id'];
 
 try {
-    $stmt = $conn->prepare("SELECT id, name FROM categories WHERE id = :id LIMIT 1");
+    $stmt = $conn->prepare("SELECT id, name, code, status FROM job_regions WHERE id = :id LIMIT 1");
     $stmt->execute([':id' => $id]);
-    $category = $stmt->fetch(PDO::FETCH_OBJ);
-    if (!$category) {
-        header("Location: " . ADMINURL . "/categories-admins/show-categories.php?error=" . urlencode("Category not found."));
+    $region = $stmt->fetch(PDO::FETCH_OBJ);
+    if (!$region) {
+        header("Location: " . ADMINURL . "/job-regions/show-jobregions.php?error=" . urlencode("Region not found."));
         exit;
     }
 } catch (Exception $e) {
-    header("Location: " . ADMINURL . "/categories-admins/show-categories.php?error=" . urlencode("Unable to load category."));
+    header("Location: " . ADMINURL . "/job-regions/show-jobregions.php?error=" . urlencode("Unable to load region."));
     exit;
 }
 
-// -------- Page context for header --------
-$pageTitle = "Update Category";
+$pageTitle = "Update Job Region";
 $breadcrumb = "System";
 
 $errors = [];
-$nameVal = $category->name; // sticky with current value by default
+$nameVal = $region->name;
+$codeVal = $region->code ?? '';
+$statusVal = (string) ($region->status ?? '1');
 
-// -------- Handle submit --------
 if (isset($_POST['submit'])) {
-    $name = trim($_POST['name'] ?? '');
-    $nameVal = $name;
+    $nameVal = trim($_POST['name'] ?? '');
+    $codeVal = trim($_POST['code'] ?? '');
+    $statusVal = $_POST['status'] ?? '1';
 
-    if ($name === '') {
-        $errors[] = "Please enter a category name.";
+    if ($nameVal === '') {
+        $errors[] = "Please enter a region name.";
     } else {
         try {
-            // Optional: prevent duplicates (case-insensitive), excluding current ID
-            $dup = $conn->prepare("SELECT 1 FROM categories WHERE LOWER(name) = LOWER(:name) AND id <> :id LIMIT 1");
-            $dup->execute([':name' => $name, ':id' => $id]);
+            $dup = $conn->prepare("SELECT 1 FROM job_regions WHERE LOWER(name) = LOWER(:name) AND id <> :id LIMIT 1");
+            $dup->execute([':name' => $nameVal, ':id' => $id]);
 
             if ($dup->fetch()) {
-                $errors[] = "Another category with this name already exists.";
+                $errors[] = "Another region with this name already exists.";
             } else {
-                $update = $conn->prepare("UPDATE categories SET name = :name WHERE id = :id");
-                $update->execute([':name' => $name, ':id' => $id]);
-
-                header("Location: " . ADMINURL . "/categories-admins/show-categories.php?updated=1");
+                $update = $conn->prepare("UPDATE job_regions SET name = :name, code = :code, status = :status WHERE id = :id");
+                $update->execute([':name' => $nameVal, ':code' => strtoupper($codeVal), ':status' => (int) $statusVal, ':id' => $id]);
+                header("Location: " . ADMINURL . "/job-regions/show-jobregions.php?updated=1");
                 exit;
             }
         } catch (Exception $e) {
-            $errors[] = "Unable to update category. Please try again.";
+            $errors[] = "Unable to update region. Please try again.";
         }
     }
 }
@@ -72,20 +69,18 @@ require "../layouts/header.php";
 
 <div class="max-w-4xl mx-auto p-4">
     <div class="bg-white shadow-md rounded-lg p-6">
-        <!-- Header -->
         <div class="flex justify-between items-center mb-6">
-            <h2 class="text-xl font-semibold text-gray-800">Update Category</h2>
-            <a href="<?= ADMINURL ?>/categories-admins/show-categories.php"
+            <h2 class="text-xl font-semibold text-gray-800">Update Job Region</h2>
+            <a href="<?= ADMINURL ?>/job-regions/show-jobregions.php"
                 class="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors flex items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                 </svg>
-                Back to Categories
+                Back to Job Regions
             </a>
         </div>
 
-        <!-- Errors -->
         <?php if ($errors): ?>
             <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md mb-6" role="alert">
                 <ul class="list-disc pl-5 m-0">
@@ -96,13 +91,28 @@ require "../layouts/header.php";
             </div>
         <?php endif; ?>
 
-        <!-- Form -->
-        <form method="POST" action="update-category.php?id=<?= (int) $id ?>" novalidate>
+        <form method="POST" action="update-jobregions.php?id=<?= (int) $id ?>" novalidate>
             <div class="mb-4">
-                <label for="catName" class="block text-sm font-medium text-gray-700 mb-1">Category Name</label>
-                <input type="text" name="name" id="catName"
+                <label for="regName" class="block text-sm font-medium text-gray-700 mb-1">Region Name</label>
+                <input type="text" name="name" id="regName"
                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="e.g., Engineering" value="<?= h($nameVal) ?>" required>
+                    placeholder="e.g., New South Wales" value="<?= h($nameVal) ?>" required>
+            </div>
+
+            <div class="mb-4">
+                <label for="regCode" class="block text-sm font-medium text-gray-700 mb-1">Region Code</label>
+                <input type="text" name="code" id="regCode"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="e.g., NSW" value="<?= h($codeVal) ?>" required>
+            </div>
+
+            <div class="mb-6">
+                <label for="regStatus" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                <select name="status" id="regStatus"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="1" <?= $statusVal === '1' ? 'selected' : '' ?>>Active</option>
+                    <option value="0" <?= $statusVal === '0' ? 'selected' : '' ?>>Inactive</option>
+                </select>
             </div>
 
             <button type="submit" name="submit"

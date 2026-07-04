@@ -1,9 +1,8 @@
 <?php require '../../config/config.php'; ?>
 
 <?php 
-
-if(isset($_SESSION['adminname'])) {
-    header("location : " . ADMINURL . "/admins/login-admins.php");
+if (!isset($_SESSION['adminname'])) {
+    header("Location: " . ADMINURL . "/admins/login-admins.php");
     exit();
 }
 
@@ -50,7 +49,6 @@ require "../layouts/header.php";
 
 <div class="flex flex-col">
   <div class="bg-white shadow-md rounded-lg overflow-hidden">
-    <!-- Card Header -->
     <div class="px-6 py-4 border-b border-gray-200">
       <div class="flex items-center justify-between">
         <div>
@@ -63,17 +61,7 @@ require "../layouts/header.php";
       </div>
     </div>
 
-    <!-- Card Body -->
     <div class="p-0">
-      <?php if (!empty($_SESSION['admin_flash'])): ?>
-        <?php $f = $_SESSION['admin_flash']; unset($_SESSION['admin_flash']); ?>
-        <div class="p-4">
-          <div class="p-4 mb-4 text-sm text-<?= h($f['type']) === 'success' ? 'green' : 'red' ?>-800 bg-<?= h($f['type']) === 'success' ? 'green' : 'red' ?>-100 rounded-lg" role="alert">
-            <?= h($f['text']) ?>
-          </div>
-        </div>
-      <?php endif; ?>
-
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
@@ -103,28 +91,11 @@ require "../layouts/header.php";
                     <?php $ts = strtotime($job->application_deadline ?: ''); echo $ts ? date('j M, Y', $ts) : '—'; ?>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <a
-                      href="<?= ADMINURL ?>/jobs-admins/status-jobs.php?id=<?= (int)$job->id ?>&status=0&r=<?= urlencode($_SERVER['REQUEST_URI']) ?>"
-                      class="px-3 py-1 border border-green-300 text-green-600 rounded-md text-xs hover:bg-green-50"
-                      title="Mark as Verified"
-                    >Verify</a>
+                    <a href="<?= ADMINURL ?>/jobs-admins/status-jobs.php?id=<?= (int)$job->id ?>&status=0&r=<?= urlencode($_SERVER['REQUEST_URI']) ?>" class="px-3 py-1 border border-green-300 text-green-600 rounded-md text-xs hover:bg-green-50" title="Mark as Verified">Verify</a>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 flex gap-2">
-                    <a
-                      href="<?= ADMINURL ?>/jobs-admins/view-pendingjob.php?id=<?= (int)$job->id; ?>"
-                      class="px-3 py-1 bg-blue-600 text-white rounded-md text-xs hover:bg-blue-700"
-                      title="View job details"
-                    >
-                      <i class="fa fa-eye"></i> View
-                    </a>
-                    <a
-                      href="<?= ADMINURL ?>/jobs-admins/delete-jobs.php?id=<?= (int)$job->id; ?>"
-                      class="px-3 py-1 bg-red-600 text-white rounded-md text-xs hover:bg-red-700"
-                      title="Delete job"
-                      onclick="return confirm('Delete this pending job posting? This action cannot be undone.');"
-                    >
-                      <i class="fa fa-trash"></i>
-                    </a>
+                    <a href="<?= ADMINURL ?>/jobs-admins/view-pendingjob.php?id=<?= (int)$job->id; ?>" class="px-3 py-1 bg-blue-600 text-white rounded-md text-xs hover:bg-blue-700" title="View job details">View</a>
+                    <a href="<?= ADMINURL ?>/jobs-admins/delete-jobs.php?id=<?= (int)$job->id; ?>" class="px-3 py-1 bg-red-600 text-white rounded-md text-xs hover:bg-red-700" title="Delete job" onclick="return confirm('Delete this pending job posting? This action cannot be undone.');">Delete</a>
                   </td>
                 </tr>
               <?php endforeach; ?>
@@ -133,29 +104,19 @@ require "../layouts/header.php";
         </table>
       </div>
 
-      <!-- Pagination -->
       <?php if ($totalPages > 1): ?>
         <nav class="p-4">
           <ul class="flex justify-center items-center gap-1">
             <li>
-              <a 
-                class="px-3 py-1 border border-gray-300 rounded-md <?= ($page <= 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50') ?>"
-                href="?page=<?= max(1, $page - 1) ?>"
-              >Previous</a>
+              <a class="px-3 py-1 border border-gray-300 rounded-md <?= ($page <= 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50') ?>" href="?page=<?= max(1, $page - 1) ?>">Previous</a>
             </li>
             <?php for ($i = 1; $i <= $totalPages; $i++): ?>
               <li>
-                <a 
-                  class="px-3 py-1 border border-gray-300 rounded-md <?= ($page === $i ? 'bg-blue-600 text-white' : 'hover:bg-gray-50') ?>"
-                  href="?page=<?= $i ?>"
-                ><?= $i ?></a>
+                <a class="px-3 py-1 border border-gray-300 rounded-md <?= ($page === $i ? 'bg-blue-600 text-white' : 'hover:bg-gray-50') ?>" href="?page=<?= $i ?>"><?= $i ?></a>
               </li>
             <?php endfor; ?>
             <li>
-              <a 
-                class="px-3 py-1 border border-gray-300 rounded-md <?= ($page >= $totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50') ?>"
-                href="?page=<?= min($totalPages, $page + 1) ?>"
-              >Next</a>
+              <a class="px-3 py-1 border border-gray-300 rounded-md <?= ($page >= $totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50') ?>" href="?page=<?= min($totalPages, $page + 1) ?>">Next</a>
             </li>
           </ul>
         </nav>

@@ -1,8 +1,8 @@
 <?php require '../../config/config.php'; ?>
 
 <?php
-if (isset($_SESSION['adminname'])) {
-    header("location : " . ADMINURL . "/admins/login-admins.php");
+if (!isset($_SESSION['adminname'])) {
+    header("Location: " . ADMINURL . "/admins/login-admins.php");
     exit();
 }
 
@@ -10,6 +10,8 @@ $pageTitle = "Create Job Region";
 $breadcrumb = "Systems";
 $errors = [];
 $nameVal = "";
+$codeVal = "";
+$statusVal = "1";
 
 function h($v)
 {
@@ -18,6 +20,8 @@ function h($v)
 
 if (isset($_POST['submit'])) {
     $nameVal = trim($_POST['name'] ?? '');
+    $codeVal = trim($_POST['code'] ?? '');
+    $statusVal = $_POST['status'] ?? '1';
 
     if ($nameVal === '') {
         $errors[] = 'Job region name is required.';
@@ -30,9 +34,9 @@ if (isset($_POST['submit'])) {
     }
 
     if (empty($errors)) {
-        $stmt = $conn->prepare("INSERT INTO job_regions (name) VALUES (?)");
-        if ($stmt->execute([$nameVal])) {
-            header('Location: ' . ADMINURL . '/job-regions/show-jobregions.php');
+        $stmt = $conn->prepare("INSERT INTO job_regions (name, code, status) VALUES (?, ?, ?)");
+        if ($stmt->execute([$nameVal, strtoupper($codeVal), (int) $statusVal])) {
+            header('Location: ' . ADMINURL . '/job-regions/show-jobregions.php?created=1');
             exit();
         } else {
             $errors[] = 'Failed to create job region. Please try again.';
@@ -67,7 +71,6 @@ require '../../admin/layouts/header.php';
         <?php endif; ?>
 
         <form method="POST" action="create-jobregions.php" novalidate>
-            <!-- Region Name -->
             <div class="mb-4">
                 <label for="regName" class="block text-sm font-medium text-gray-700 mb-1">Region Name</label>
                 <input type="text" name="name" id="regName"
@@ -75,7 +78,6 @@ require '../../admin/layouts/header.php';
                     placeholder="e.g., New South Wales" value="<?= h($nameVal) ?>" required>
             </div>
 
-            <!-- Code -->
             <div class="mb-4">
                 <label for="regCode" class="block text-sm font-medium text-gray-700 mb-1">Region Code</label>
                 <input type="text" name="code" id="regCode"
@@ -84,7 +86,6 @@ require '../../admin/layouts/header.php';
                 <p class="text-sm text-gray-500 mt-1">Will be saved in uppercase.</p>
             </div>
 
-            <!-- Status -->
             <div class="mb-6">
                 <label for="regStatus" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
                 <select name="status" id="regStatus"

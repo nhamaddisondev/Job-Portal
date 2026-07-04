@@ -2,8 +2,8 @@
 
 <?php
 
-if (isset($_SESSION['adminname'])) {
-    header("location : " . ADMINURL . "/admins/login-admins.php");
+if (!isset($_SESSION['adminname'])) {
+    header("Location: " . ADMINURL . "/admins/login-admins.php");
     exit();
 }
 
@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
     if (empty($errors)) {
         $stmt = $conn->prepare("INSERT INTO categories (name) VALUES (?)");
         if ($stmt->execute([$nameVal])) {
-            header('Location: ' . ADMINURL . '/categories-admins/categories.php');
+            header('Location: ' . ADMINURL . '/categories-admins/show-categories.php?created=1');
             exit();
         } else {
             $errors[] = 'Failed to create category. Please try again.';

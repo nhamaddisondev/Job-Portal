@@ -1,9 +1,8 @@
 <?php
-
 require '../../config/config.php';
 
-if (isset($_SESSION['adminname'])) {
-    header("location : " . ADMINURL . "/admins/login-admins.php");
+if (!isset($_SESSION['adminname'])) {
+    header("Location: " . ADMINURL . "/admins/login-admins.php");
     exit();
 }
 
@@ -16,10 +15,10 @@ function h($v)
 }
 
 //Pagination
-$limit = 10; // Number of records per page
-$page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int) $_GET['page'] : 1; // Current page number
-$offset = ($page - 1) * $limit; // Offset for the current page
-$counter = $offset + 1; // Row counter
+$limit = 10;
+$page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int) $_GET['page'] : 1;
+$offset = ($page - 1) * $limit;
+$counter = $offset + 1;
 
 //Totals 
 $totalStmt = $conn->query("SELECT COUNT(*) AS total FROM users WHERE UPPER(type) = 'JOB SEEKER'");
@@ -52,35 +51,22 @@ $jobSeekers = $stmt->fetchAll(PDO::FETCH_OBJ);
 <div class="p-4">
     <div class="max-w-full">
         <div class="bg-white shadow-md rounded-lg overflow-hidden">
-            <!-- Card Header -->
             <div class="p-4 border-b border-gray-200">
                 <div class="flex items-center justify-between">
                     <h2 class="text-lg font-semibold mb-0">Job Seekers</h2>
-                    <!-- Reserved for future actions (export, filters) -->
                 </div>
             </div>
 
-            <!-- Card Body -->
             <div class="p-0">
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th
-                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
-                                    #</th>
-                                <th
-                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Full Name</th>
-                                <th
-                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Username</th>
-                                <th
-                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Email</th>
-                                <th
-                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Contact</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">#</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Full Name</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Username</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
@@ -103,7 +89,6 @@ $jobSeekers = $stmt->fetchAll(PDO::FETCH_OBJ);
                     </table>
                 </div>
 
-                <!-- Pagination -->
                 <nav class="p-3 border-t border-gray-200">
                     <ul class="flex justify-center space-x-1">
                         <li>

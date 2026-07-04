@@ -4,7 +4,7 @@
 $suppressPageHead = true;
 
 if (isset($_SESSION['adminname'])) {
-    header('Location: ' . ADMINURL . '');
+    header('Location: ' . ADMINURL . '/index.php');
     exit();
 }
 
@@ -25,20 +25,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
     if ($email === '' || $password === '') {
         $error = 'Email and password are required.';
     } else {
-        $stmt = $conn->prepare("SELECT id, name, email, password FROM users WHERE email = ? AND role = 'admin'");
-        $stmt->execute([$email]);
-        $admin = $stmt->fetch();
+        try {
+            $stmt = $conn->prepare("SELECT id, name, email, password FROM users WHERE email = ? AND role = 'admin'");
+            $stmt->execute([$email]);
+            $admin = $stmt->fetch();
 
-        if ($admin && password_verify($password, $admin['password'])) {
-            $_SESSION['id'] = $admin['id'];
-            $_SESSION['adminname'] = $admin['name'];
-            $_SESSION['email'] = $admin['email'];
-            $_SESSION['role'] = 'admin';
-            header('Location: ' . ADMINURL . '');
-            exit();
+            if ($admin && password_verify($password, $admin['password'])) {
+                $_SESSION['id'] = $admin['id'];
+                $_SESSION['adminname'] = $admin['name'];
+                $_SESSION['email'] = $admin['email'];
+                $_SESSION['role'] = 'admin';
+                header('Location: ' . ADMINURL . '/index.php');
+                exit();
+            }
+
+            $error = 'Invalid email or password.';
+        } catch (PDOException $e) {
+            $error = 'Database error: ' . $e->getMessage();
         }
-
-        $error = 'Invalid email or password.';
     }
 }
 

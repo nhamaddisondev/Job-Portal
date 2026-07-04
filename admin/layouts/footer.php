@@ -1,8 +1,11 @@
 <?php
 if (!isset($base_url)) {
     $base_url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]";
-    $project_folder = explode('/', $_SERVER['REQUEST_URI'])[1];
-    $base_url = $base_url . '/' . $project_folder;
+    $requestPath = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
+    $parts = explode('/', $requestPath);
+    $adminIndex = array_search('admin', $parts);
+    $projectPath = $adminIndex !== false ? implode('/', array_slice($parts, 0, $adminIndex)) : $parts[0];
+    $base_url = $base_url . '/' . $projectPath;
 }
 ?>
 
