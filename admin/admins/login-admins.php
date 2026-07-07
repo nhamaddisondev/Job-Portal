@@ -1,6 +1,5 @@
-<?php require '../../config/config.php'; ?>
-
 <?php
+require '../../config/config.php';
 $suppressPageHead = true;
 
 if (isset($_SESSION['adminname'])) {

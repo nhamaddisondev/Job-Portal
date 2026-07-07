@@ -11,7 +11,7 @@ $conn = null;
 try{
     $host = 'localhost';
     $dbname = 'online_jobs_portal';
-    $port = '3306';
+    $port = '3307';
     $username = 'root';
     $password = '';
 
