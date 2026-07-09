@@ -17,7 +17,7 @@ if (!function_exists('h')) {
     }
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'],$_POST['password'])) {
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
 
@@ -28,12 +28,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
             $stmt = $conn->prepare("SELECT id, name, email, password FROM users WHERE email = ? AND role = 'admin'");
             $stmt->execute([$email]);
             $admin = $stmt->fetch();
+            //var_dump($admin);
 
             if ($admin && password_verify($password, $admin['password'])) {
                 $_SESSION['id'] = $admin['id'];
                 $_SESSION['adminname'] = $admin['name'];
                 $_SESSION['email'] = $admin['email'];
                 $_SESSION['role'] = 'admin';
+
                 header('Location: ' . ADMINURL . '/index.php');
                 exit();
             }
@@ -133,7 +135,7 @@ require '../../admin/layouts/header.php';
                         <a href="#" class="text-sm text-slate-400 transition hover:text-sky-600">Forgot password?</a>
                     </div>
 
-                    <button type="submit" name="submit" class="inline-flex w-full items-center justify-center rounded-xl bg-sky-600 px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 disabled:cursor-wait disabled:opacity-75" id="submitBtn">
+                    <button type="submit" name="submit" value="Sign in" class="inline-flex w-full items-center justify-center rounded-xl bg-sky-600 px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 disabled:cursor-wait disabled:opacity-75" id="submitBtn">
                         Sign in
                     </button>
                 </form>
@@ -165,8 +167,8 @@ require '../../admin/layouts/header.php';
   }
   if (form && btn){
     form.addEventListener('submit', function(){
-      btn.disabled = true;
-      btn.innerHTML = '<span class="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white"></span> Signing in...';
+      //btn.disabled = true;
+      //btn.innerHTML = '<span class="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white"></span> Signing in...';
     });
   }
 })();

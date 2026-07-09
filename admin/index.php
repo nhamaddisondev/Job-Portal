@@ -1,6 +1,6 @@
-<?php require '../config/config.php'; ?>
-
 <?php
+session_start();
+require '../config/config.php';
 if (!isset($_SESSION['id']) || $_SESSION['role'] !== 'admin') {
     header('Location: ' . ADMINURL . '/login-admins.php');
     exit();
