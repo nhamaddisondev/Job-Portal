@@ -1,5 +1,7 @@
 <?php
-session_start(); 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start(); 
+}
 
 $baseUrl = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'];
 $scriptDir = trim(dirname($_SERVER['SCRIPT_NAME']), '/');
