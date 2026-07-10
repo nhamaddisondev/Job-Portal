@@ -1,5 +1,6 @@
 <?php
 require '../../config/config.php';
+require '../../includes/public-helpers.php';
 
 if (!isset($_SESSION['adminname'])) {
     header("Location: " . ADMINURL . "/admins/login-admins.php");

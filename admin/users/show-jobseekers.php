@@ -22,7 +22,7 @@ $offset = ($page - 1) * $limit;
 $counter = $offset + 1;
 
 //Totals 
-$totalStmt = $conn->query("SELECT COUNT(*) AS total FROM users WHERE UPPER(type) = 'JOB SEEKER'");
+$totalStmt = $conn->query("SELECT COUNT(*) AS total FROM users WHERE UPPER(type) = 'EMPLOYEE' OR role = 'employee'");
 $totalRecords = (int) $totalStmt->fetch(PDO::FETCH_OBJ)->total;
 $totalPages = max(1, (int) ceil($totalRecords / $limit));
 
@@ -37,7 +37,7 @@ if ($page > $totalPages) {
 $stmt = $conn->prepare("
   SELECT id, fullname, username, email, contact
   FROM users
-  WHERE UPPER(type) = 'JOB SEEKER'
+  WHERE UPPER(type) = 'EMPLOYEE' OR role = 'employee'
   ORDER BY id ASC
   LIMIT :limit OFFSET :offset
 ");
