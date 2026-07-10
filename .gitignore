@@ -1,0 +1,49 @@
+# Composer
+/vendor/
+composer.lock
+
+# PHPUnit
+.phpunit.result.cache
+/coverage/
+.phpunit.cache/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+.env.testing
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+/tmp/
+/temp/
+*.tmp
+
+# Uploads (if you want to exclude uploaded files)
+/users/user-images/
+/uploads/
+
+# Test database (if using separate test DB)
+# Uncomment if you store test DB credentials
+# database/test.sqlite
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Session files (if stored locally)
+sessions/
