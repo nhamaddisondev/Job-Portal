@@ -17,6 +17,7 @@ function h($v)
 //Pagination
 $limit = 10;
 $page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int) $_GET['page'] : 1;
+$page = max(1, $page); // Ensure page is at least 1
 $offset = ($page - 1) * $limit;
 $counter = $offset + 1;
 
