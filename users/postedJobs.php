@@ -48,8 +48,8 @@ require '../includes/header.php';
                                 <p class="text-sm text-slate-600"><?php echo h(field($job, 'job_category', 'General')); ?> &middot; <?php echo h(field($job, 'job_region', 'Any region')); ?></p>
                             </div>
                             <?php $status = (int) field($job, 'status', 0); ?>
-                            <span class="rounded-full px-3 py-1 text-xs font-semibold <?php echo $status === 1 ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'; ?>">
-                                <?php echo $status === 1 ? 'Active' : 'Pending'; ?>
+                            <span class="rounded-full px-3 py-1 text-xs font-semibold <?php echo $status === 'active' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'; ?>">
+                                <?php echo $status === 'active' ? 'Active' : 'Pending'; ?>
                             </span>
                         </div>
                         <p class="mt-3 text-sm text-slate-600">Deadline: <?php echo h(format_date(field($job, 'application_deadline'))); ?></p>

@@ -135,10 +135,10 @@ require "../layouts/header.php";
                     <?php $ts = strtotime($job->application_deadline ?: ''); echo $ts ? date('j M, Y', $ts) : '—'; ?>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <?php if ((int)$job->status === 1): ?>
-                      <a href="<?= ADMINURL ?>/jobs-admins/status-jobs.php?id=<?= (int)$job->id; ?>&status=1&r=<?= urlencode($_SERVER['REQUEST_URI']); ?>" class="px-3 py-1 border border-red-300 text-red-600 rounded-md text-xs hover:bg-red-50" title="Mark as Unverified">Unverify</a>
+                    <?php if ($job->status === 'active'): ?>
+                      <a href="<?= ADMINURL ?>/jobs-admins/status-jobs.php?id=<?= (int)$job->id; ?>&status=active&r=<?= urlencode($_SERVER['REQUEST_URI']); ?>" class="px-3 py-1 border border-red-300 text-red-600 rounded-md text-xs hover:bg-red-50" title="Mark as Unverified">Unverify</a>
                     <?php else: ?>
-                      <a href="<?= ADMINURL ?>/jobs-admins/status-jobs.php?id=<?= (int)$job->id; ?>&status=0&r=<?= urlencode($_SERVER['REQUEST_URI']); ?>" class="px-3 py-1 border border-green-300 text-green-600 rounded-md text-xs hover:bg-green-50" title="Mark as Verified">Verify</a>
+                      <a href="<?= ADMINURL ?>/jobs-admins/status-jobs.php?id=<?= (int)$job->id; ?>&status=pending&r=<?= urlencode($_SERVER['REQUEST_URI']); ?>" class="px-3 py-1 border border-green-300 text-green-600 rounded-md text-xs hover:bg-green-50" title="Mark as Verified">Verify</a>
                     <?php endif; ?>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">

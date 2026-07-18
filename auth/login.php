@@ -1,12 +1,8 @@
 <?php
 require '../config/config.php';
 
-$scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? 'https' : 'http';
-$projectRoot = rtrim(str_replace('\\', '/', dirname(dirname($_SERVER['SCRIPT_NAME']))), '/');
-$appUrl = $scheme . '://' . $_SERVER['HTTP_HOST'] . $projectRoot;
-
 if (isset($_SESSION['username'])) {
-    header('Location: ' . $appUrl . '/index.php');
+    header('Location: ' . BASEURL . '/index.php');
     exit();
 }
 
@@ -28,13 +24,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
     if ($login === '' || $password === '') {
         $error = 'Please fill in all fields.';
     } else {
-        $stmt = $conn->prepare("
-            SELECT *
-            FROM users
-            WHERE username = :login OR email = :login
-            LIMIT 1
-        ");
-        $stmt->bindValue(':login', $login);
+        $columns = [];
+        try {
+            $stmt = $conn->query('DESCRIBE users');
+            foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $column) {
+                $columns[$column['Field']] = true;
+            }
+        } catch (Throwable $e) {
+            $columns = [];
+        }
+        $hasUsername = isset($columns['username']);
+        
+        if ($hasUsername) {
+            $stmt = $conn->prepare("
+                SELECT *
+                FROM users
+                WHERE username = :login OR email = :login
+                LIMIT 1
+            ");
+            $stmt->bindValue(':login', $login);
+        } else {
+            $stmt = $conn->prepare("
+                SELECT *
+                FROM users
+                WHERE email = :login
+                LIMIT 1
+            ");
+            $stmt->bindValue(':login', $login);
+        }
         $stmt->execute();
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -44,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
             $_SESSION['email'] = $user['email'] ?? '';
             $_SESSION['type'] = $user['type'] ?? '';
             $_SESSION['role'] = $user['role'] ?? (strtolower((string) $_SESSION['type']) === 'job seeker' ? 'employee' : strtolower((string) $_SESSION['type']));
-            header('Location: ' . $appUrl . '/index.php');
+            header('Location: ' . BASEURL . '/users/employer_dashboard.php');
             exit();
         }
 

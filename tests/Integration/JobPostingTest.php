@@ -159,7 +159,7 @@ class JobPostingTest extends TestCase
         $jobId = $this->createTestJob($employerId);
 
         // Update job status to approved
-        $stmt = self::$pdo->prepare("UPDATE jobs SET status = 1 WHERE id = :id");
+        $stmt = self::$pdo->prepare("UPDATE jobs SET status = 'active' WHERE id = :id");
         $result = $stmt->execute([':id' => $jobId]);
 
         $this->assertTrue($result, 'Job status should be updated');
@@ -239,14 +239,14 @@ class JobPostingTest extends TestCase
         $jobId2 = $this->createTestJob($employerId, 1); // Approved
 
         // Count pending jobs
-        $stmt = self::$pdo->prepare("SELECT COUNT(*) FROM jobs WHERE status = 0");
+        $stmt = self::$pdo->prepare("SELECT COUNT(*) FROM jobs WHERE status = 'pending'");
         $stmt->execute();
         $pendingCount = $stmt->fetchColumn();
 
         $this->assertGreaterThanOrEqual(1, $pendingCount, 'Should have at least 1 pending job');
 
         // Count approved jobs
-        $stmt = self::$pdo->prepare("SELECT COUNT(*) FROM jobs WHERE status = 1");
+        $stmt = self::$pdo->prepare("SELECT COUNT(*) FROM jobs WHERE status = 'active'");
         $stmt->execute();
         $approvedCount = $stmt->fetchColumn();
 
@@ -284,7 +284,7 @@ class JobPostingTest extends TestCase
     /**
      * Helper method to create a test job
      */
-    private function createTestJob(int $employerId, int $status = 0): int
+    private function createTestJob(int $employerId, string $status = 'pending'): int
     {
         $sql = "INSERT INTO jobs (
             job_title, 

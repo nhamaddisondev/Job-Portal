@@ -13,7 +13,7 @@ $categories = [];
 if (db_available($conn)) {
     try {
         if (table_exists($conn, 'jobs')) {
-            $where = has_column($conn, 'jobs', 'status') ? 'WHERE status = 1' : '';
+            $where = has_column($conn, 'jobs', 'status') ? "WHERE status = 'active'" : '';
             $stats['jobs'] = (int) $conn->query("SELECT COUNT(*) FROM jobs $where")->fetchColumn();
             $latestJobs = $conn->query("SELECT * FROM jobs $where ORDER BY id DESC LIMIT 6")->fetchAll(PDO::FETCH_OBJ);
 
@@ -33,7 +33,7 @@ if (db_available($conn)) {
         }
 
         if (table_exists($conn, 'users')) {
-            $stats['seekers'] = (int) $conn->query("SELECT COUNT(*) FROM users WHERE UPPER(type) = 'JOB SEEKER' OR role = 'employee'")->fetchColumn();
+            $stats['seekers'] = (int) $conn->query("SELECT COUNT(*) FROM users WHERE type = 'employee'")->fetchColumn();
         }
     } catch (Throwable $e) {
         $latestJobs = [];

@@ -4,8 +4,12 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 $baseUrl = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'];
-$scriptDir = trim(dirname($_SERVER['SCRIPT_NAME']), '/');
-define('BASEURL', $baseUrl . '/' . $scriptDir);
+$scriptDir = dirname($_SERVER['SCRIPT_NAME']);
+$scriptDir = rtrim($scriptDir, '/');
+// Go up to project root (parent of current script directory)
+$projectRoot = dirname($scriptDir);
+$projectRoot = rtrim($projectRoot, '/');
+define('BASEURL', $baseUrl . $projectRoot);
 
 //Database Config
 $conn = null;
@@ -38,12 +42,15 @@ if(!defined('ADMINURL')){
     $host          = $_SERVER['HTTP_HOST'];
     $scriptDir     = dirname($_SERVER['SCRIPT_NAME']);
     $parts         = explode('/', trim($scriptDir, '/'));
-    $projectFolder = $parts[0] ?? '';
-    // If there are more parts (e.g. Cloner/job-portal), include them
-    $adminPath     = $projectFolder;
-    for ($i = 1; $i < count($parts); $i++) {
-        if ($parts[$i] === 'admin') break;
-        $adminPath .= '/' . $parts[$i];
+    // Find the position of 'admin' in the path
+    $adminIndex = array_search('admin', $parts);
+    if ($adminIndex !== false) {
+        // Take everything before 'admin' (excluding 'admin' itself and anything after it)
+        $adminPath = implode('/', array_slice($parts, 0, $adminIndex));
+    } else {
+        $adminPath = '';
     }
-    define('ADMINURL', "$protocol://$host/$adminPath/admin");
+    // Remove leading/trailing slashes
+    $adminPath = trim($adminPath, '/');
+    define('ADMINURL', "$protocol://$host" . ($adminPath ? "/$adminPath" : '') . "/admin");
 }

@@ -40,15 +40,15 @@ try {
     }
 
     $label = $jobRow['job_title'] ? '"' . $jobRow['job_title'] . '"' : "Job #{$id}";
-    $currentStatus = (int) $jobRow['status'];
-    $newStatus = ($currentStatus === 1 ? 0 : 1); // toggle
+    $currentStatus = $jobRow['status'];
+    $newStatus = ($currentStatus === 'active' ? 'pending' : 'active'); // toggle
 
     // Update
     $stmt = $conn->prepare("UPDATE jobs SET status = :s WHERE id = :id");
     $ok = $stmt->execute([':s' => $newStatus, ':id' => $id]);
 
     if ($ok && $stmt->rowCount() > 0) {
-        $verb = ($newStatus === 1) ? 'approved/published' : 'unpublished';
+        $verb = ($newStatus === 'active') ? 'approved/published' : 'unpublished';
         $_SESSION['admin_flash'] = ['type' => 'success', 'text' => "{$label} has been {$verb}."];
     } else {
         $_SESSION['admin_flash'] = ['type' => 'warning', 'text' => "No changes were made to {$label}."];

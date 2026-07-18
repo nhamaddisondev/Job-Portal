@@ -22,7 +22,7 @@ $offset = ($page - 1) * $limit;
 $counter = $offset + 1;
 
 //Totals 
-$totalStmt = $conn->query("SELECT COUNT(*) AS total FROM users WHERE UPPER(type) = 'EMPLOYEE' OR role = 'employee'");
+$totalStmt = $conn->query("SELECT COUNT(*) AS total FROM users WHERE type = 'employee'");
 $totalRecords = (int) $totalStmt->fetch(PDO::FETCH_OBJ)->total;
 $totalPages = max(1, (int) ceil($totalRecords / $limit));
 
@@ -35,9 +35,14 @@ if ($page > $totalPages) {
 
 //Page of job seekers
 $stmt = $conn->prepare("
-  SELECT id, fullname, username, email, contact
+  SELECT 
+      id, 
+      name AS fullname, 
+      email AS username, 
+      email, 
+      phone AS contact
   FROM users
-  WHERE UPPER(type) = 'EMPLOYEE' OR role = 'employee'
+  WHERE type = 'employee'
   ORDER BY id ASC
   LIMIT :limit OFFSET :offset
 ");
@@ -63,11 +68,21 @@ $jobSeekers = $stmt->fetchAll(PDO::FETCH_OBJ);
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">#</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Full Name</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Username</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
+                                <th
+                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
+                                    #</th>
+                                <th
+                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Full Name</th>
+                                <th
+                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Username</th>
+                                <th
+                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Email</th>
+                                <th
+                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Contact</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">

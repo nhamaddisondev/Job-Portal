@@ -12,7 +12,7 @@ $totalPages = 1;
 
 if (db_available($conn) && table_exists($conn, 'users')) {
     try {
-        $where = ["(UPPER(type) = 'JOB SEEKER' OR role = 'employee')"];
+        $where = ["type = 'employee'"];
         $params = [];
 
         if ($q !== '') {

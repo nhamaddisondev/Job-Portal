@@ -21,9 +21,9 @@ $stats = [
 
 try {
     $stats['jobs'] = (int) $conn->query("SELECT COUNT(*) FROM jobs")->fetchColumn();
-    $stats['pending_jobs'] = (int) $conn->query("SELECT COUNT(*) FROM jobs WHERE status = 0")->fetchColumn();
+    $stats['pending_jobs'] = (int) $conn->query("SELECT COUNT(*) FROM jobs WHERE status = 'pending'")->fetchColumn();
     $stats['employers'] = (int) $conn->query("SELECT COUNT(*) FROM employers")->fetchColumn();
-    $stats['jobseekers'] = (int) $conn->query("SELECT COUNT(*) FROM users WHERE UPPER(type) = 'JOB SEEKER' OR role = 'employee'")->fetchColumn();
+    $stats['jobseekers'] = (int) $conn->query("SELECT COUNT(*) FROM users WHERE type = 'employee'")->fetchColumn();
     $stats['categories'] = (int) $conn->query("SELECT COUNT(*) FROM categories")->fetchColumn();
     $stats['regions'] = (int) $conn->query("SELECT COUNT(*) FROM job_regions")->fetchColumn();
     $stats['applications'] = (int) $conn->query("SELECT COUNT(*) FROM applications")->fetchColumn();
@@ -78,6 +78,10 @@ require '../admin/layouts/header.php';
     </div>
 
     <div class="mt-8 grid gap-5 lg:grid-cols-2">
+        <a href="<?php echo ADMINURL; ?>/jobs-admins/create-job.php" class="rounded-lg border border-sky-200 bg-sky-50 p-6 shadow-sm hover:border-sky-400 transition">
+            <h2 class="text-lg font-bold text-sky-800">Create Job</h2>
+            <p class="mt-1 text-sm text-sky-600">Add a new job posting directly.</p>
+        </a>
         <a href="<?php echo ADMINURL; ?>/jobs-admins/show-jobs.php" class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm hover:border-sky-300 transition">
             <h2 class="text-lg font-bold text-slate-950">Manage Jobs</h2>
             <p class="mt-1 text-sm text-slate-600">View, approve, and manage all job postings.</p>

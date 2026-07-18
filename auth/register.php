@@ -1,12 +1,8 @@
 <?php
 require '../config/config.php';
 
-$scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? 'https' : 'http';
-$projectRoot = rtrim(str_replace('\\', '/', dirname(dirname($_SERVER['SCRIPT_NAME']))), '/');
-$appUrl = $scheme . '://' . $_SERVER['HTTP_HOST'] . $projectRoot;
-
 if (isset($_SESSION['username'])) {
-    header('Location: ' . $appUrl . '/index.php');
+    header('Location: ' . BASEURL . '/index.php');
     exit();
 }
 
@@ -69,14 +65,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
     }
 
     if (!$errors) {
-        $stmt = $conn->prepare('SELECT id FROM users WHERE username = :username OR email = :email LIMIT 1');
-        $stmt->execute([
-            ':username' => $values['username'],
-            ':email' => $values['email'],
-        ]);
+        $columns = user_columns($conn);
+        $hasUsername = isset($columns['username']);
+        
+        if ($hasUsername) {
+            $stmt = $conn->prepare('SELECT id FROM users WHERE username = :username OR email = :email LIMIT 1');
+            $stmt->execute([
+                ':username' => $values['username'],
+                ':email' => $values['email'],
+            ]);
+        } else {
+            $stmt = $conn->prepare('SELECT id FROM users WHERE email = :email LIMIT 1');
+            $stmt->execute([
+                ':email' => $values['email'],
+            ]);
+        }
 
         if ($stmt->fetch()) {
-            $errors[] = 'Username or email is already registered.';
+            $errors[] = $hasUsername ? 'Username or email is already registered.' : 'Email is already registered.';
         }
     }
 
@@ -115,7 +121,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
         $stmt = $conn->prepare($sql);
 
         if ($stmt->execute($data)) {
-            header('Location: ' . $appUrl . '/auth/login.php?registered=1');
+            header('Location: ' . BASEURL . '/auth/login.php?registered=1');
             exit();
         }
 

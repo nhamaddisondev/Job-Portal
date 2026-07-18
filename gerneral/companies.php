@@ -51,7 +51,7 @@ if (db_available($conn)) {
                 $params[':q'] = '%' . $q . '%';
             }
             if (has_column($conn, 'jobs', 'status')) {
-                $where[] = 'status = 1';
+                $where[] = "status = 'active'";
             }
             $whereSql = 'WHERE ' . implode(' AND ', $where);
             $count = $conn->prepare("SELECT COUNT(DISTINCT company_name) FROM jobs $whereSql");

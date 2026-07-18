@@ -24,7 +24,7 @@ if ($isEmployer && db_available($conn)) {
             $totalJobs = (int) $stmt->fetchColumn();
 
             if (has_column($conn, 'jobs', 'status')) {
-                $stmt = $conn->prepare("SELECT COUNT(*) FROM jobs WHERE company_id = :id AND status = 1");
+                $stmt = $conn->prepare("SELECT COUNT(*) FROM jobs WHERE company_id = :id AND status = 'active'");
                 $stmt->execute([':id' => $userId]);
                 $activeJobs = (int) $stmt->fetchColumn();
             }

@@ -110,11 +110,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
             if (isset($columns['company_image']) && $imageName) {
                 $data['company_image'] = $imageName;
             }
-            if (isset($columns['company_id'])) {
-                $data['company_id'] = (int) $_SESSION['id'];
+            if (isset($columns['employer_id'])) {
+                $data['employer_id'] = (int) $_SESSION['id'];
             }
             if (isset($columns['status'])) {
-                $data['status'] = 0; // Pending approval
+                $data['status'] = 'pending'; // Pending approval
             }
             if (isset($columns['created_at'])) {
                 $data['created_at'] = date('Y-m-d H:i:s');
@@ -132,7 +132,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
             $success = true;
             $formData = array_map(fn() => '', $formData);
         } catch (Throwable $e) {
-            $errors[] = 'Failed to post job. Please try again.';
+            $errors[] = 'Failed to post job. Error: ' . $e->getMessage();
+            error_log('Job posting error: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
         }
     }
 }

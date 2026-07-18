@@ -211,7 +211,7 @@ require "../layouts/header.php";
 
                 <!-- Buttons -->
                 <div class="mt-6 flex justify-between">
-                    <a href="status-jobs.php?id=<?= (int) $job->id ?>&status=0&r=<?= urlencode('pending-jobs.php') ?>"
+                    <a href="status-jobs.php?id=<?= (int) $job->id ?>&status=pending&r=<?= urlencode('pending-jobs.php') ?>"
                         class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20"
                             fill="currentColor">
